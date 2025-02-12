@@ -1,5 +1,3 @@
-/* eslint-disable require-jsdoc */
-
 import { onRequest } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 
@@ -9,7 +7,11 @@ initializeApp({
   credential: cert(serviceAccount as ServiceAccount),
 });
 import { Moxfield } from "./controllers/moxfield";
-import { DeckRepository, DeckCEDHRepository } from "./repositories";
+import {
+  DeckRepository,
+  DeckCEDHRepository,
+  EventsRepository,
+} from "./repositories";
 import { Deck } from "./domain";
 
 const moxfield = new Moxfield(process.env.MOXFIELD_USER_AGENT);
@@ -68,14 +70,7 @@ export const saveCEDHDecklist = onRequest(async (request, response) => {
   }
 });
 
-// async function saveCards(
-//   cards:Record<string, { card: Card }>, allCardsNames: Array<string>
-// ) {
-//   const promises = Object.values(cards).map(async (value) => {
-//     const { name, type_line: typeLine, mana_cost: manaCost } = value.card;
-//     await CardRepository.saveCard(name, manaCost, typeLine);
-//     allCardsNames.push(name);
-//   });
-
-//   await Promise.all(promises);
-// }
+export const fetchUpcomingEvents = onRequest(async (request, response) => {
+  const events = await EventsRepository.upcomingEvents();
+  response.send(events);
+});
