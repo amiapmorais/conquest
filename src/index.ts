@@ -11,8 +11,10 @@ import {
   DeckRepository,
   DeckCEDHRepository,
   EventsRepository,
+  PlayerRepository,
 } from "./repositories";
 import { Deck } from "./domain";
+import { RegisterPlayerDto } from "./domain/dto/register-player.dto";
 
 const moxfield = new Moxfield(process.env.MOXFIELD_USER_AGENT);
 
@@ -71,6 +73,23 @@ export const saveCEDHDecklist = onRequest(async (request, response) => {
 });
 
 export const fetchUpcomingEvents = onRequest(async (request, response) => {
-  const events = await EventsRepository.upcomingEvents();
-  response.send(events);
+  try {
+    const events = await EventsRepository.upcomingEvents();
+    response.send(events);
+  } catch (error) {
+    response.status(500).send(error);
+  }
+});
+
+export const registerPlayer = onRequest(async (request, response) => {
+  try {
+    const registerPlayerDto = request.body as RegisterPlayerDto;
+    const event = await EventsRepository.fetchEvent(registerPlayerDto.eventId);
+    const player = await PlayerRepository
+      .fetchPlayer(registerPlayerDto.playerId);
+    const message = await EventsRepository.registerPlayer(event, player);
+    response.send(message);
+  } catch (error) {
+    response.status(500).send(error);
+  }
 });
