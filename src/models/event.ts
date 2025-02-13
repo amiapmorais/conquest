@@ -8,11 +8,11 @@ import { Player } from "../domain/player";
 
 class EventModel {
   id: string;
-  playersList: Array<Player>;
+  playerList: Array<Player>;
 
   constructor(event: EventParams) {
     this.id = event.eventId;
-    this.playersList = event.playerList;
+    this.playerList = event.playerList;
   }
 
 
@@ -50,7 +50,7 @@ class EventModel {
 
   convertToDocument() {
     const result = {
-      playersList: this.playersList.map((player) => ({
+      playerList: this.playerList.map((player) => ({
         playerId: player.playerId,
         playerName: player.playerName,
       })),
